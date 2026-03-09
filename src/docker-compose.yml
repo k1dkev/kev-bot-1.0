@@ -19,3 +19,4 @@ services:
       SQL_DB_USER: ${SQL_DB_USER}
       SQL_DB_PORT: ${SQL_DB_PORT}
       SQL_DB_SSL_CA: ${SQL_DB_SSL_CA}
+    network_mode: host

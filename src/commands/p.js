@@ -1,5 +1,12 @@
 const { Message, VoiceChannel } = require("discord.js");
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require("@discordjs/voice");
+const {
+  joinVoiceChannel,
+  createAudioPlayer,
+  createAudioResource,
+  AudioPlayerStatus,
+  entersState,
+  VoiceConnectionStatus,
+} = require("@discordjs/voice");
 const { logAudioPlaySql } = require("../functions/logs/logAudioPlaySql.js");
 const { audioDict, recentlyPlayedList } = require("../data");
 const { PLAY_TYPE } = require("../enumerations/PlayType");
@@ -23,6 +30,8 @@ module.exports = {
   execute({ message, args, audio, voiceChannel, discordId, playType }) {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log("p command executed");
+
         // Get discord id
         let _discordId = discordId || message?.author?.id;
 
@@ -39,23 +48,48 @@ module.exports = {
 
         // Ensure the file is downloaded before playing
         const localFilePath = await ensureFileDownloaded(_audio);
+        console.log("localFilePath", localFilePath);
 
         // Join channel, play mp3 from the dictionary, leave when completed.
         const player = createAudioPlayer();
         const resource = createAudioResource(localFilePath);
+        console.log("guild adapter exists?", !!_voiceChannel.guild.voiceAdapterCreator);
+        console.log("channel type:", _voiceChannel.type);
+        console.log("guild id:", _voiceChannel.guild.id);
+        console.log("channel id:", _voiceChannel.id);
         const connection = joinVoiceChannel({
+          debug: true,
           channelId: _voiceChannel.id,
           guildId: _voiceChannel.guild.id,
           adapterCreator: _voiceChannel.guild.voiceAdapterCreator,
           selfDeaf: false,
           selfMute: false,
         });
+        connection.on("stateChange", (oldState, newState) => {
+          console.log(`VOICE ${oldState.status} -> ${newState.status}`);
+        });
+        player.on("stateChange", (oldState, newState) => {
+          console.log(`PLAYER ${oldState.status} -> ${newState.status}`);
+        });
         connection.subscribe(player);
+        await entersState(connection, VoiceConnectionStatus.Ready, 5_000).catch((err) => {
+          console.error(`Failed to enter ready state. Actual state: "${connection.state.status}". Error:`, err);
+          connection.destroy();
+          return reject({ userMess: "Voice connection failed to enter ready state." });
+        });
         player.play(resource);
         player.on(AudioPlayerStatus.Idle, async () => {
-          connection.disconnect();
+          // connection.disconnect();
+          connection.destroy();
           // Cleanup cache after playing
           await cleanupAudioCache();
+        });
+        player.on("error", (err) => {
+          console.error("AudioPlayer error:", err);
+          connection.destroy();
+        });
+        player.on("debug", (message) => {
+          console.log("AudioPlayer debug:", message);
         });
 
         // On every play update the recently played list
@@ -76,6 +110,7 @@ module.exports = {
         }
 
         // return resolve promise
+        console.log("p command resolved");
         return resolve();
       } catch (err) {
         return reject({

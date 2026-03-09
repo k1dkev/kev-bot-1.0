@@ -57,6 +57,7 @@ async function initializeAudioDict(googleFiles) {
  * @returns {Promise<string>} - The local path to the audio file
  */
 async function ensureFileDownloaded(audioName) {
+  console.log("ensureFileDownloaded called");
   if (!audioDict[audioName]) {
     throw new Error(`Audio file ${audioName} does not exist`);
   }
@@ -65,17 +66,22 @@ async function ensureFileDownloaded(audioName) {
 
   // If already downloaded, return the local path
   if (fileInfo.isDownloaded && fs.existsSync(fileInfo.localPath)) {
+    console.log("file already downloaded");
     return fileInfo.localPath;
   }
 
   // Create audio directory if it doesn't exist
   if (!fs.existsSync(audioPath)) {
+    console.log("audio path does not exist, creating it");
     fs.mkdirSync(audioPath, { recursive: true });
   }
 
   // Download the file
+  console.log("fileInfo.localPath", fileInfo.localPath);
+  console.log("downloading file");
   await fileInfo.cloudFile.download({ destination: fileInfo.localPath });
   fileInfo.isDownloaded = true;
+  console.log("download complete");
 
   return fileInfo.localPath;
 }
@@ -142,6 +148,7 @@ async function cleanupAudioCache(maxCacheSize = 100) {
 
     // If we're under the limit, no need to clean up
     if (downloadedFiles.length <= maxCacheSize) {
+      console.log("no files to cleanup, returning");
       return;
     }
 
