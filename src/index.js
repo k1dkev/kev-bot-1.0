@@ -6,6 +6,7 @@ const { updateUserNames } = require("./functions/updaters/updateUserNames.js");
 const { handleEvents } = require("./functions/handlers/handleEvents");
 const { handleCommands } = require("./functions/handlers/handleCommands");
 require("dotenv").config();
+const { generateDependencyReport } = require("@discordjs/voice");
 
 // Discord Client
 const client = new Client({
@@ -24,6 +25,7 @@ const client = new Client({
 
 // Initialization
 (async () => {
+  console.log(generateDependencyReport());
   console.log("Initializing...");
   await directories();
   await audio(process.env.CLEAR_AUDIO_PRIOR_TO_DOWNLOAD === "true");

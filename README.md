@@ -7,28 +7,32 @@ kev-bot is a discord bot for playing custom audio clips. The bot utilizes the di
 - [kev-bot](#kev-bot)
 - [Table of contents](#table-of-contents)
 - [Commands](#commands)
-    - [Audio Commands](#audio-commands)
-    - [List Command](#list-command)
-    - [Greeting Commands](#greeting-commands)
-    - [Farewell Commands](#farewell-commands)
-    - [Upload Command](#upload-command)
-    - [Category Commands](#category-commands)
-    - [Help Command](#help-command)
+  - [Audio Commands](#audio-commands)
+  - [List Command](#list-command)
+  - [Greeting Commands](#greeting-commands)
+  - [Farewell Commands](#farewell-commands)
+  - [Upload Command](#upload-command)
+  - [Category Commands](#category-commands)
+  - [Help Command](#help-command)
 - [Code Architecture](#code-architecture)
-    - [Node, Discord.js, Discord API](#node-discordjs-discord-api)
-    - [Heroku](#heroku)
-    - [MySQL](#mysql)
-    - [Google Cloud Storage](#google-cloud-storage)
+  - [Node, Discord.js, Discord API](#node-discordjs-discord-api)
+  - [Heroku](#heroku)
+  - [MySQL](#mysql)
+  - [Google Cloud Storage](#google-cloud-storage)
 - [Release Notes](#release-notes)
-    - [v.1.3.3](#v133)
-      - [Fixes](#fixes)
-    - [v1.3.2](#v132)
-    - [v1.3.1](#v131)
-    - [v1.3.0](#v130)
-    - [v1.2.0](#v120)
-    - [v1.1.1](#v111)
-    - [v1.1.0](#v110)
-    - [v1.0.0](#v100)
+  - [v1.3.4 - 2026-03-09](#v134---2026-03-09)
+    - [Fixes](#fixes)
+    - [Added](#added)
+    - [Changed](#changed)
+  - [v1.3.3](#v133)
+    - [Fixes](#fixes-1)
+  - [v1.3.2](#v132)
+  - [v1.3.1](#v131)
+  - [v1.3.0](#v130)
+  - [v1.2.0](#v120)
+  - [v1.1.1](#v111)
+  - [v1.1.0](#v110)
+  - [v1.0.0](#v100)
 
 # Commands
 
@@ -208,7 +212,26 @@ A Google Cloud Storage bucket is used to store all the mp3 files. The bot downlo
 
 # Release Notes
 
-### v.1.3.3
+### v1.3.4 - 2026-03-09
+
+#### Fixes
+
+- Fixed issues with bot not playing audio files correctly.
+  - Discord now enforces the use of the DAVE Protocol which is Discord's E2EE Encryption library.
+  - Simply added the npm package `@snazzah/davey` fixed the issue.
+  - The following resource helped with the debugging process: [Debugging Dependencies](https://discordjs.guide/voice#debugging-dependencies)
+
+#### Added
+
+- Dependency Report is now generated when bot starts up.
+
+#### Changed
+
+- Bumped discord npm package versions
+- Bumped node version
+- Removed unnecessary npm packages
+
+### v1.3.3
 
 #### Fixes
 

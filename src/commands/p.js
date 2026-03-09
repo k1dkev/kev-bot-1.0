@@ -1,5 +1,12 @@
 const { Message, VoiceChannel } = require("discord.js");
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require("@discordjs/voice");
+const {
+  joinVoiceChannel,
+  createAudioPlayer,
+  createAudioResource,
+  AudioPlayerStatus,
+  entersState,
+  VoiceConnectionStatus,
+} = require("@discordjs/voice");
 const { logAudioPlaySql } = require("../functions/logs/logAudioPlaySql.js");
 const { audioDict, recentlyPlayedList } = require("../data");
 const { PLAY_TYPE } = require("../enumerations/PlayType");
@@ -50,11 +57,18 @@ module.exports = {
           selfDeaf: false,
           selfMute: false,
         });
+
         connection.subscribe(player);
+
+        await entersState(connection, VoiceConnectionStatus.Ready, 30_000).catch((err) => {
+          console.error(`Failed to enter ready state. Actual state: "${connection.state.status}". Error:`, err);
+          connection.destroy();
+          return reject({ userMess: "Voice connection failed to enter ready state." });
+        });
+
         player.play(resource);
         player.on(AudioPlayerStatus.Idle, async () => {
-          connection.disconnect();
-          // Cleanup cache after playing
+          connection.destroy();
           await cleanupAudioCache();
         });
 
@@ -75,7 +89,6 @@ module.exports = {
           });
         }
 
-        // return resolve promise
         return resolve();
       } catch (err) {
         return reject({

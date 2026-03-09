@@ -47,3 +47,23 @@ Use `host.docker.internal` if you have containers that are deployed together and
    ```sh
    npm start
    ```
+
+## gcloud metadata bug
+
+For some reason, the mock gcloud has a bug that creates `<file>.metadata` files. But you get into a situation where you get metadata files for the already existing metadata files. So you get files like `example.mp3`, `example.mp3.metadata`, `example.mp3.metadata.metadata`, and etc. To fix this you can run the following commands
+
+### Dry Run
+
+```sh
+find ./gcloud/data/kevbot-local-audio -type f -name '*.metadata*' -print
+```
+
+### Delete
+
+> [!NOTE]
+> There should only be one `.bucketMetadata` file per bucket.
+
+```sh
+find ./gcloud/data/kevbot-local-audio -type f -name '*.metadata*' -delete
+rm ./gcloud/data/*.bucketMetadata
+```
