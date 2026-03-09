@@ -1,0 +1,15 @@
+{
+  "name": "no-voice-minimal",
+  "version": "1.0.0",
+  "description": "Minimal Discord bot to play audio on tp!<clip-name> (no Docker)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.10.0",
+    "@discordjs/voice": "^0.19.0",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  }
+}
